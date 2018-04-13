@@ -1,5 +1,5 @@
 ''' Grafica los espectros de absorción de los datos obtenidos en
-formato ASCII'''
+formato ASC'''
 
 import matplotlib.pyplot as plt
 from os import listdir
