@@ -82,50 +82,86 @@ def graficaTodos(directorio,listaDeArchivos,bandas):
 
 '''Grafica sobreponiendo los datos de todos los archivos dentro de un
 directorio'''
-def graficaSobrepuestas(directorio,listaDeArchivos):
-    fig = plt.figure(figsize=(20,10))
-    plt.title('Sobrepuestas')
+def graficaSobrepuestas(directorio,listaDeArchivos,bandas, titulo):
+    colors = ['black', 'silver', 'red', 'sienna', 'moccasin', 'gold', 'orange',
+              'blue', 'chartreuse', 'green', 'mediumspringgreen',
+              'lightseagreen', 'darkcyan', 'royalblue', 'salmon', 'blueviolet',
+              'purple', 'fuchsia','pink', 'tan', 'olivedrab', 'tomato', 'yellow']
+    fig = plt.figure(figsize=(15,8))
+    plt.title(titulo)
     plt.xlabel('Número de onda [cm⁻¹]')
     plt.ylabel('Transmitancia [%]')
     minimos=[]
+    cont=0
     for dir in listaDeArchivos:
         f=open(directorio+dir)
         archivo=f.read()
         datos=getDatos(archivo,limpia(archivo))
         datosx=[]
         datosy=[]
-        minimos=[]
         for i in range(len(datos)):
             datosx.append(datos[i][0])
             datosy.append(datos[i][1])
             if(1<i<len(datos)-1 and datos[i-1][1]>datos[i][1] and
                datos[i][1]<datos[i+1][1]) and datos[i][1]<95 :
                     minimos.append([datos[i][0],datos[i][1]])
-        plt.plot(datosx,datosy,label=dir[:len(dir)-4])
+        plt.plot(datosx,datosy,label=dir[:len(dir)-4],color=colors[cont])
+        cont+=1
         plt.legend(loc=2)
         ax = fig.add_subplot(111)
     for i in bandas.keys():
         for j in minimos:
-            if (j[0]-15<bandas.get(i)<j[0]+15):
+            if (j[0]-10<bandas.get(i)<j[0]+10):
                 ax.annotate(i, xy=(j[0],j[1]), xytext=(j[0],j[1]),
                 arrowprops=dict(facecolor='black'))
+                break
     ax = plt.gca()
     ax.set_xlim(ax.get_xlim()[::-1])
-    plt.savefig('Sobrepuestas.png',dpi=400)
+    plt.savefig(titulo+'.png',dpi=400)
     for i in bandas.keys():
         for j in minimos:
             if (j[0]-15<bandas.get(i)<j[0]+15):
                 axzoom=fig.add_subplot(111)
-                axzoom.set(xlim=(j[0]+400, j[0]-400),
-                           ylim=(j[1]-20, j[1]+20), autoscale_on=False,
-                           title='Zoom'+str(i))
-                plt.savefig( 'Zoom'+str(i)+'.png', dpi=400)
+                if (0<j[1]<60):
+                    axzoom.set(xlim=(j[0]+200, j[0]-200),
+                               ylim=(j[1]-15, j[1]+50), autoscale_on=False,
+                               title=str(i))
+                if (80<j[1]<100):
+                    axzoom.set(xlim=(j[0]+200, j[0]-200),
+                               ylim=(j[1]-15, j[1]+10), autoscale_on=False,
+                               title=str(i))
+                elif(60<=j[1]<=80):
+                    axzoom.set(xlim=(j[0]+200, j[0]-200),
+                               ylim=(j[1]-20, j[1]+20), autoscale_on=False,
+                               title=str(i))
+                plt.savefig(str(i)+'.png', dpi=400)
 
 '''Diccionario con las bandas de absorción de interés'''
-bandas={'Estiramiento simétrico CH3':2608,'Estiramiento CH3':3089.6,
-        'Estiramiento C=O':1619.81,'Estiramiento asimétrico NH2':2295.55,
-        'Estiramiento OH':3439.71}
+SUB = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
+SUP = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
 
-'''Uso de las funciones para obtener las gráficas'''
-graficaTodos('Archivos/',getNombresArchivos('Archivos','allende1.asc'),bandas)
-graficaSobrepuestas('Archivos/',getNombresArchivos('Archivos','allende1.asc'))
+bandasl={'ν NH3⁺, ν CH'.translate(SUB):3060, 'ν NH3⁺, ν CH'.translate(SUB):2990,
+        'ν CH3, ν NH3⁺'.translate(SUB):2970, 'ν NH3⁺'.translate(SUB):2742,
+        'ν CH3 simétrico'.translate(SUB):2603.25,'ν CH':3089.62,'ν C=O':1619.81,
+        'ν NH2 asimétrico'.translate(SUB):2292.55, 'ν OH':3439.71,
+        'δ NH3⁺ , ν CO2⁻'.translate(SUB):1566, 'δ CH3'.translate(SUB):1447,
+        'ν CO2⁻ , δ CH3 , δ ΝCH'.translate(SUB): 1386,
+        'δ CH3 , δ ΝCH, ν CCC'.translate(SUB): 1336, 'δ CCH': 1290,
+        'ρ NH3⁺'.translate(SUB):1238, 'ρ NH3 , δ CCH'.translate(SUB):1157,
+        'ρ CH3 , ν CN'.translate(SUB):1095,
+        'δ CCH, ρ CH3 , ρ NH3 , ν C-CH3'.translate(SUB):1004,
+        'ν CN, ν CCC': 897, 'ν CN, ν CCC': 832, 'ω CO2⁻'.translate(SUB):749,
+        'ρ CH3 , ρ NH3 , δ CO2⁻'.translate(SUB):639,
+        'ρ NH3'.translate(SUB):569, 'δ CCO, ν C-N':526, 'δ CCN':418,
+        'τ CH3 , ω NH3⁺'.translate(SUB):321, 'δ CCC':275  }
+bandasd={'δ NH3, ν asimétrico COO'.translate(SUB):1623,
+         'ν asimétrico COO, δ NH3'.translate(SUB):1587,
+         'δ asimétrica CH3':1456, 'ν simétrico COO'.translate(SUB):1414,
+         'δ asimétrica CH3':1360, 'δ asimétrica CH3'.translate(SUB):1307,
+         'β NH3':1239, 'ρ NH3'.translate(SUB): 1115,
+         'ν simétrico CCNC'.translate(SUB):1015,
+         'ν asimétrico CCNC, ρ CH3'.translate(SUB):919,
+         '2ν CCNC, ρ CH3'.translate(SUB):850,}
+
+bandas=bandasl
+bandas.update(bandasd)
