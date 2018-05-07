@@ -5,4 +5,10 @@ sys.path.append("/home/ivan/Documents/Taller/Graficas")
 import espectros as e
 
 e.graficaSobrepuestas('Archivos/', e.getNombresArchivos('Archivos',
-                      'D-Alanina I 1M M E.asc'), e.bandas, 'Irradiados')
+                      'L-Alanina Irradiada  Magnetizada Eppendorf.asc'),
+                       e.bandas, 'Irradiados')
+
+e.aExcel('Archivos/', e.getNombresArchivos('Archivos',
+                    'L-Alanina Irradiada  Magnetizada Eppendorf.asc'), 'Irradiados')
+
+e.CSVToASCII('Irradiados.csv')

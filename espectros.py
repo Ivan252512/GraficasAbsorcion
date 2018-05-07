@@ -67,14 +67,14 @@ def grafica(datos,nombre,bandas):
         if(1<i<len(datos)-1 and datos[i-1][1]>datos[i][1] and
            datos[i][1]<datos[i+1][1]) and datos[i][1]<95 :
                 minimos.append([datos[i][0],datos[i][1]])
-    fig=plt.figure(figsize=(20, 12))
-    plt.plot(datosx,datosy, color='k')
+    fig=plt.figure(figsize=(16, 8))
+    plt.plot(datosx,datosy, color='red')
     ax = fig.add_subplot(111)
     for i in bandas.keys():
         for j in minimos:
             if (j[0]-15<bandas.get(i)<j[0]+15):
                 ax.annotate(i, xy=(j[0],j[1]), xytext=(j[0],j[1]),
-                arrowprops=dict(facecolor='black'))
+                arrowprops=dict(facecolor='red'))
     plt.title(nombre)
     plt.xlabel('Número de onda [cm⁻¹]')
     ax = plt.gca()
@@ -101,7 +101,7 @@ def graficaTodos(directorio,listaDeArchivos,bandas):
 '''Grafica sobreponiendo los datos de todos los archivos dentro de un
 directorio'''
 def graficaSobrepuestas(directorio,listaDeArchivos,bandasSobrepuestas, titulo):
-    fig = plt.figure(figsize=(20,12))
+    fig = plt.figure(figsize=(40,20))
     plt.title(titulo)
     plt.xlabel('Número de onda [cm⁻¹]')
     plt.ylabel('Transmitancia [%]')
@@ -133,26 +133,9 @@ def graficaSobrepuestas(directorio,listaDeArchivos,bandasSobrepuestas, titulo):
     ax = plt.gca()
     ax.set_xlim(ax.get_xlim()[::-1])
     plt.savefig(titulo+'.png',dpi=400)
-    for i in bandasSobrepuestas.keys():
-        for j in minimos:
-            if (j[0]-15<bandasSobrepuestas.get(i)<j[0]+15):
-                axzoom=fig.add_subplot(111)
-                if (0<j[1]<60):
-                    axzoom.set(xlim=(j[0]+200, j[0]-200),
-                               ylim=(j[1]-30, j[1]+65), autoscale_on=False,
-                               title=str(i))
-                if (85<j[1]<100):
-                    axzoom.set(xlim=(j[0]+200, j[0]-200),
-                               ylim=(j[1]-25, j[1]+15), autoscale_on=False,
-                               title=str(i))
-                elif(60<=j[1]<=85):
-                    axzoom.set(xlim=(j[0]+200, j[0]-200),
-                               ylim=(j[1]-35, j[1]+35), autoscale_on=False,
-                               title=str(i))
-                plt.savefig(titulo+ ' ' + str(i)+'.png', dpi=400)
 
 """ Ajunta los datos de todos los .asc y los convierte en un .csv"""
-def aExcel(directorio,listaDeArchivos):
+def aExcel(directorio,listaDeArchivos, titulo):
     nombres={}
     cont=0;
     for dir in listaDeArchivos:
@@ -164,11 +147,25 @@ def aExcel(directorio,listaDeArchivos):
         for i in range(len(datos)):
             datosx.append(float(datos[i][0]))
             datosy.append(float(datos[i][1]))
-        nombres.update({dir[:len(dir)-4] +'\n' + 'Transmitancia[%]' : datosy})
+        nombres.update({dir[:len(dir)-4] : datosy})
         cont+=1
-    nombres.update({'Número de Onda [cm⁻¹]' : datosx})
+    nombres.update({'ν' : datosx})
     matrizDatos=pd.DataFrame(nombres).sort_index(axis=1,  ascending=False)
-    matrizDatos.to_csv('Datos.csv')
+    matrizDatos.to_csv(titulo+'.csv', index=False)
+
+""" Crea un nuevo archivo .asc y adjunta en el todos los .asc del directorio"""
+def CSVToASCII(csv):
+	nf=open(csv[:len(csv)-4]+'.asc', 'w')
+	f=open(csv,'r')
+	linea=''
+	for i in f.read():
+		if(i!=','):
+			linea+=i
+		else:
+			linea+='\t'
+	nf.write(linea)
+	f.close()
+	nf.close()
 
 
 '''Diccionario con las bandas de absorción de interés'''

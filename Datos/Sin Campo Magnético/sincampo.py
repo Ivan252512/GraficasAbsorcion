@@ -5,4 +5,10 @@ sys.path.append("/home/ivan/Documents/Taller/Graficas")
 import espectros as e
 
 e.graficaSobrepuestas('Archivos/', e.getNombresArchivos('Archivos',
-                      'D-Alanina  NM 1M P.asc'), e.bandas,'Sin Campo Magnético')
+                      'LD-Alanina No Magnetizada  Eppendorf.asc'),
+                       e.bandas,'Sin Campo Magnético')
+
+e.aExcel('Archivos/', e.getNombresArchivos('Archivos',
+                    'LD-Alanina No Magnetizada  Eppendorf.asc'), 'Sin Campo Magnético')
+
+e.CSVToASCII('Sin Campo Magnético.csv')

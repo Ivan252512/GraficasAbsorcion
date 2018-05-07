@@ -10,4 +10,6 @@ e.graficaTodos('Archivos/',e.getNombresArchivos('Archivos',
                       'D-Alanina Irradiada Magnetizada Eppendorf.asc'),e.bandas)
 
 e.aExcel('Archivos/', e.getNombresArchivos('Archivos',
-                    'D-Alanina Irradiada Magnetizada Eppendorf.asc'))
+                    'D-Alanina Irradiada Magnetizada Eppendorf.asc'), 'Todas')
+
+e.CSVToASCII('Todas.csv')
